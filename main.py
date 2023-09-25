@@ -1,31 +1,56 @@
 import pandas as pd
 import os
+import tkinter as tk
+from tkinter import filedialog
+
+
+
+root = tk.Tk()
+root.withdraw() 
+
 
 preDef = []
-predefined_values = ["ASM7121G"]  # Replace with your desired value "675-639-00" 0,1 for search 2 for return
+directions1 = """
+  Select the Folder with the files to search: 
+  """
+directions2 = """
+  Select the the file containg the search vlaues:
+"""
+# predefined_values = ["ASM7121G"]  # Replace with your desired value "675-639-00" 0,1 for search 2 for return
 column_indices_to_compare = [0,1]  # Replace with the column indices you want to compare
 columns_to_keep = [0,2]
 matching_rows_list = []  # To store matched rows from all sheets
 
+def userDirections(directions):
+  root = tk.Tk()
+  root.title("Instructions")
 
-#Not yet working
-def data_proccesing(file_path):
-    df = pd.read_excel(file_path)
-    
-    for col in df.columns:
-      # Find index of first non-NaN value in column
-      first_notna = df[col].first_valid_index()
-      print(first_notna)
-      # Slice column from that index and overwrite
-      df[col] = df[col].iloc[first_notna:]
-      
-      df.to_excel(output_file_path1, index=False)
+  text = tk.Text(root, height=8) 
+  text.pack() 
+
+  text.insert('1.0', directions)
+
+
+def getFilepath():
+  root = tk.Tk() 
+  root.withdraw()
+
+  file_path = filedialog.askopenfilename(title="Select Search File")
+  return file_path
+
+
+
+def getDirectory():
+    root = tk.Tk()
+    root.withdraw()
+    folder_path = filedialog.askdirectory(title="Select Folder with Files") 
+    return folder_path
+
       
 def getting_values(search_path):
-    df = pd.read_excel(search_path)
-
-    preDef = df.iloc[:,0]
-    return preDef
+    df = pd.read_excel(search_path, usecols=[0]) 
+    print(df)
+    return df
       
 
 def compare_and_save_matches(file_path, output_file_path):
@@ -65,10 +90,16 @@ def compare_and_save_matches(file_path, output_file_path):
     except Exception as e:
         print(f"Error processing '{file_path}': {str(e)}")
 
-directory_path = 'C:/Users/muhammad.matloob/Desktop/Mimi/Files' 
-search_path = "C:/Users/muhammad.matloob/Desktop/Mimi/Files/Search/Search.xlsx"
-output_file_path = 'C:/Users/muhammad.matloob/Desktop/Mimi/Files/Results/matched_rows.xlsx'
-# output_file_path1 = 'C:/Users/muhammad.matloob/Desktop/Mimi/Files/Results/matched_rows1.xlsx'
+# userDirections(directions1)
+directory_path = getDirectory() 
+
+# userDirections(directions2)
+search_path = getFilepath()
+
+output_file_path = directory_path
+if not os.path.exists(output_file_path = directory_path + "/Results"):
+  os.makedirs(output_file_path = directory_path + "/Results")
+#output_file_path = 'C:/Users/muhammad.matloob/Desktop/Mimi/Files/Results/matched_rows1.xlsx'
 
 
 preDef = getting_values(search_path)
